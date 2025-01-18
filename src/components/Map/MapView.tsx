@@ -1,5 +1,4 @@
 //@ts-nocheck
-
 import React, { useEffect, useRef, useState } from "react";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -9,6 +8,8 @@ import { Draw } from "ol/interaction";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
 import MissionModal from "../Modal/MissionModal";
+import PolygonModal from "../Modal/PolygonModal";
+import { calculateDistance } from "../../utils/distanceCalculator";
 
 const MapView: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -17,6 +18,11 @@ const MapView: React.FC = () => {
     null
   );
   const [features, setFeatures] = useState<any[]>([]);
+  const [polygonToImport, setPolygonToImport] = useState<any>(null);
+  const [modalType, setModalType] = useState<"Mission" | "Polygon" | null>(
+    null
+  );
+  const [insertIndex, setInsertIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const initialMap = new Map({
@@ -54,11 +60,71 @@ const MapView: React.FC = () => {
     draw.on("drawend", (event) => {
       const feature = event.feature;
       const coordinates = feature.getGeometry()?.getCoordinates();
-      setFeatures((prev) => [...prev, { type, coordinates }]);
-      console.log("Feature drawn:", coordinates);
+      const distance =
+        type === "LineString" ? calculateDistance(coordinates) : 0;
+
+      if (type === "LineString") {
+        setFeatures((prev) => [...prev, { type, coordinates, distance }]);
+        setModalType("Mission");
+      } else if (type === "Polygon") {
+        setPolygonToImport({ type, coordinates, distance });
+        setModalType("Polygon");
+      }
+
+      setDrawType(null);
     });
 
     map.addInteraction(draw);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        map.removeInteraction(draw);
+        window.removeEventListener("keydown", handleKeyDown);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+  };
+
+  const handleInsertPolygon = (index: number) => {
+    setInsertIndex(index);
+    setDrawType("Polygon");
+    startDrawing("Polygon");
+  };
+
+  const importPolygonToMission = () => {
+    if (!polygonToImport || insertIndex === null) return;
+
+    setFeatures((prev) => {
+      const updatedFeatures = [...prev];
+      const lineString = updatedFeatures[insertIndex];
+      const polygonCoords = polygonToImport.coordinates[0];
+      const lineStringCoords = lineString.coordinates;
+
+      if (insertIndex === 0) {
+        lineString.coordinates = [...polygonCoords, ...lineStringCoords];
+      } else if (insertIndex === updatedFeatures.length - 1) {
+        lineString.coordinates = [...lineStringCoords, ...polygonCoords];
+      } else {
+        const firstSegment = lineStringCoords.slice(0, insertIndex + 1);
+        const secondSegment = lineStringCoords.slice(insertIndex + 1);
+        lineString.coordinates = [
+          ...firstSegment,
+          ...polygonCoords,
+          ...secondSegment,
+        ];
+      }
+
+      updatedFeatures[insertIndex] = {
+        ...lineString,
+        distance: calculateDistance(lineString.coordinates),
+      };
+
+      return updatedFeatures;
+    });
+
+    setPolygonToImport(null);
+    setModalType("Mission");
   };
 
   return (
@@ -68,7 +134,20 @@ const MapView: React.FC = () => {
       </button>
       <button onClick={() => startDrawing("Polygon")}>Draw Polygon</button>
       <div ref={mapRef} style={{ width: "100%", height: "500px" }} />
-      <MissionModal features={features} />
+      {modalType === "Mission" && (
+        <MissionModal
+          features={features}
+          onInsertPolygon={handleInsertPolygon}
+          onClose={() => setModalType(null)}
+        />
+      )}
+      {modalType === "Polygon" && (
+        <PolygonModal
+          polygon={polygonToImport}
+          onImport={importPolygonToMission}
+          onClose={() => setModalType(null)}
+        />
+      )}
     </div>
   );
 };

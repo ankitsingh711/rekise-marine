@@ -6,7 +6,11 @@ interface DrawButtonProps {
 }
 
 const DrawButton: React.FC<DrawButtonProps> = ({ onClick, label }) => {
-  return <button onClick={onClick}>{label}</button>;
+  return (
+    <button onClick={onClick} className="draw-button">
+      {label}
+    </button>
+  );
 };
 
 export default DrawButton;

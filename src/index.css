@@ -1,0 +1,279 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1 {
+  font-size: 36px;
+  margin: 24px 0;
+  color: #007bff;
+  text-align: center;
+  letter-spacing: 1.5px;
+}
+
+button {
+  margin: 10px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: none;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.draw-button {
+  background-color: #007bff;
+  color: white;
+  border-radius: 24px;
+  box-shadow: 0 6px 8px rgba(0, 123, 255, 0.2);
+}
+
+.draw-button:hover {
+  background-color: #0056b3;
+}
+
+button.secondary {
+  background-color: #28a745;
+  color: white;
+}
+
+button.secondary:hover {
+  background-color: #218838;
+}
+
+#map-container {
+  width: 100%;
+  max-width: 1200px;
+  height: 500px;
+  margin: 16px auto;
+  border-radius: 8px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 2px solid #007bff;
+}
+
+#map-container .ol-control {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease-in-out;
+  z-index: 1000;
+}
+
+.modal h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 16px;
+}
+
+.modal p {
+  font-size: 16px;
+  color: #555555;
+  margin-bottom: 24px;
+}
+
+.modal-content {
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.modal table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal table th, .modal table td {
+  text-align: left;
+  padding: 12px 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.modal table th {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.modal table tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+.modal table tr:hover {
+  background: #e6f7ff;
+}
+
+.modal table td button {
+  background: transparent;
+  color: #007bff;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal table td button:hover {
+  color: #0056b3;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888888;
+  transition: color 0.3s ease-in-out;
+}
+
+.modal-close:hover {
+  color: #333333;
+}
+
+.modal-footer {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.modal-footer button {
+  margin-left: 12px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Tooltips for map actions */
+.tooltip {
+  position: absolute;
+  background: #333333;
+  color: #ffffff;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: none;
+}
+
+.tooltip.show {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .modal {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal h2 {
+    font-size: 20px;
+  }
+
+  .modal table th, .modal table td {
+    font-size: 12px;
+  }
+
+  #map-container {
+    height: 400px;
+  }
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  border-radius: 8px;
+  width: 180px;
+}
+
+.dropdown button {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.2s;
+  border-bottom: 1px solid #ddd;
+}
+
+.dropdown button:last-child {
+  border-bottom: none;
+}
+
+.dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown button:focus {
+  outline: none;
+}
+
+.modal table td button {
+  background-color: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal table td button:hover {
+  background-color: #007bff;
+  color: white;
+}
